@@ -2,7 +2,7 @@ name: Build, Push y Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
 
 concurrency:
   group: deploy
