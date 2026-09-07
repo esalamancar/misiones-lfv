@@ -1,0 +1,586 @@
+:root {
+
+    --safe-area-top: env(safe-area-inset-top);
+    
+    color-scheme: light;
+    /* Colores principales */
+    --color-primary: /*#1087d6*/#144390; /* Azul */
+    --color-primary-opaque: #1087d6ea;
+    --color-secondary: #0058aa; /* Verde */
+
+    /* Colores de texto */
+    --color-text-light: #ffffff; /* Blanco */
+    --color-text-dark: #333333; /* Gris oscuro */
+    --color-text-muted: #777777; /* Gris medio */
+
+    /* Colores de estado */
+    --color-error: #e74c3c; /* Rojo */
+    --color-warning: #f1c40f; /* Amarillo */
+    --color-success: #2ecc71; /* Verde */
+    --color-info: #3482db; /* Azul */
+
+    /* Colores de fondo */
+    --color-background-light: #f4f4f4; /* Gris claro */
+    --color-background-dark: #333333; /* Gris oscuro */
+    --color-background-card: #ffffff; /* Blanco */
+
+    /* Colores de bordes */
+    --color-border: #dddddd; /* Gris claro */
+    --color-border-dark: #cccccc; /* Gris medio */
+
+    /* Colores adicionales */
+    --color-shadow: rgba(0, 0, 0, 0.1); /* Sombra suave */
+    --color-link: #3482db; /* Azul (igual que el primario) */
+    --color-link-hover: #0058aa; /* Azul más oscuro */
+
+    /*spinner*/
+    --spinner-size: 64px;
+    --spinner-border: 4px;
+}
+
+/* Aplicación de colores */
+body {
+    background-color: var(--color-background-light);
+    color: var(--color-text-dark);
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+html {
+    scrollbar-width: none; /* FF */
+}
+::-webkit-scrollbar {
+    width: 0px; /* Chrome & Edge */
+}
+
+header {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed; /* Header fijo en la parte superior */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Asegurar que esté por encima de todo */
+}
+header p {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0; /* Elimina márgenes que puedan desalinearlo */
+}
+
+#menu-toggle {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    font-size: 24px;
+    cursor: pointer;
+    display: block;
+}
+
+#menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--color-primary-opaque);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: left 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+#menu.active {
+    left: 0;
+}
+
+#close-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    font-size: 32px;
+    cursor: pointer;
+}
+
+#menu ul {
+    list-style: none;
+    text-align: center;
+}
+
+#menu ul li {
+    margin: 20px 0;
+}
+
+#menu ul li a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: 24px;
+}
+
+#menu ul li a.logout {
+    color: var(--color-error); /* Rojo para "Cerrar sesión" */
+}
+
+main {
+    margin-top: 60px; /* Margen superior igual a la altura del header */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 600px;
+    margin: 10px 0;
+    padding-top: 20px;
+    background-color: var(--color-background-card);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--color-shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card i {
+    font-size: 50px;
+    margin-bottom: 15px;
+    color: var(--color-primary);
+}
+
+.card h2 {
+    font-size: 24px;
+    color: var(--color-text-dark);
+}
+
+/* Botones */
+.button {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--color-secondary);
+}
+
+/* Mensajes de estado */
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.message.error {
+    background-color: var(--color-error);
+    color: var(--color-text-light);
+}
+
+.message.warning {
+    background-color: var(--color-warning);
+    color: var(--color-text-dark);
+}
+
+.message.success {
+    background-color: var(--color-success);
+    color: var(--color-text-light);
+}
+
+.message.info {
+    background-color: var(--color-info);
+    color: var(--color-text-light);
+}
+
+/* Loader escalera*/
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 100px;
+    aspect-ratio: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    display: grid;
+    filter: blur(5px) contrast(10);
+    mix-blend-mode:normal;
+  }
+  .loader:before,
+  .loader:after{
+    content: "";
+    grid-area: 1/1;
+    background:
+      linear-gradient(#fff 0 0) left,
+      linear-gradient(#fff 0 0) right;
+    background-size: 20px 40px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+  }
+  .loader:after {
+    height: 20px;
+    width:  20px;
+    margin: auto 0;
+    border-radius: 50%;
+    background: #fff;
+    animation: l10 1s infinite;
+  }
+  @keyframes l10{
+    90%,100% {transform: translate(300%)}
+  }
+/* Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    text-align: left;
+}
+
+table th {
+    background-color: var(--color-background-dark);
+    color: var(--color-text-light);
+}
+
+/* Enlaces */
+a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-link-hover);
+}
+
+/* Estilos para la sección de búsqueda */
+.search-section {
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.search-section label {
+    font-weight: bold;
+}
+
+.search-section form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-section input[type="text"] {
+
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    flex: 1;
+}
+
+.search-section button {
+    padding: 8px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-section button:hover {
+    background-color: var(--color-secondary);
+}
+
+.search-section select,
+.search-section input[type="number"] {
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+}
+
+#advanced-search {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Estilos para la sección de resultados */
+.results-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.results-list {
+    list-style: none;
+    padding: 0;
+}
+
+.result-item {
+    background-color: var(--color-background-card);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.result-text {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.result-details {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+/* Paginación */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    color: var(--color-link-hover);
+}
+
+.search-placeholder {
+    text-align: center;
+    color: var(--color-text-muted);
+    opacity: 0.5;
+    font-size: 20px;
+}
+
+.search-placeholder i {
+    font-size: 50px;
+    color: var(--color-text-muted);
+}
+
+.chapter-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.chapter-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.verses-list {
+    list-style: none;
+    padding: 0;
+}
+
+.verse-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: var(--color-background-card);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+}
+
+.verse-number {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Estilos para la paginación */
+.pagination-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pagination a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    color: var(--color-link-hover);
+}
+
+/* Estilos para la pantalla de carga */
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-primary-opaque);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+/* Estilos para el spinner */
+.spinner {
+    display: inline-block;
+    position: relative;
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+  }
+  
+  .spinner div {
+    position: absolute;
+    border: var(--spinner-border) solid var(--color-background-light);
+    opacity: 1;
+    border-radius: 50%;
+    animation: ripple 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+  
+  /* Segundo círculo con retardo para dinamismo */
+  .spinner div:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+
+  .spinner p {
+    text-align: center;
+  }
+  
+  @keyframes ripple {
+    0% {
+      top: calc(50% - var(--spinner-border));
+      left: calc(50% - var(--spinner-border));
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      top: 0;
+      left: 0;
+      width: calc(100% - calc(var(--spinner-border) * 2));
+      height: calc(100% - calc(var(--spinner-border) * 2));
+      opacity: 0;
+    }
+  }
+
+/* Estilos para el texto de carga */
+#loading p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: var(--color-text-light);
+}
+
+.paginator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* Botones estilo paginador */
+.paginator button {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.paginator button:hover:not(:disabled) {
+    background-color: var(--color-secondary);
+}
+
+.paginator button:disabled {
+    background-color: var(--color-text-muted);
+    cursor: default;
+}
+
+/* Texto de la página */
+.paginator span {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Botones de ir a medios o youtube */
+.span-boton {
+    flex: 0 0 20%; /* Ocupa al menos el 20% del ancho */
+    min-width: 20%; /* Asegura que no sea menor al 20% */
+    text-align: right; /* Alinea el contenido a la derecha */
+}
+
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.button-link:hover,
+.button-link:focus {
+    background-color: var(--color-secondary);
+    border-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+@media (max-width: 600px) {
+    :root {
+        --spinner-size: 200px;
+        --spinner-border: 15px;
+    }
+
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-form input[type="text"],
+    .search-form button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .span-boton {
+        flex: 0 0 35%;
+        min-width: 35%;
+        text-align: right;
+    }
+}

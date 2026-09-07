@@ -1,0 +1,76 @@
+name: Build, Push y Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login a GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build y push imagen Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/misiones-lfv:latest
+            ghcr.io/${{ github.repository_owner }}/misiones-lfv:sha-${{ github.sha }}
+
+      - name: Configurar clave SSH
+        run: |
+          set -euo pipefail
+          install -m 600 -D /dev/null ~/.ssh/deploy-key
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy-key
+
+      - name: Abrir túnel SSH hacia la API de k3s
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.VPS_SSH_PORT }}" -i ~/.ssh/deploy-key \
+            -o StrictHostKeyChecking=accept-new \
+            -o ExitOnForwardFailure=yes \
+            -f -N -L 16443:localhost:6443 \
+            "${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_HOST }}"
+
+      - name: Obtener kubeconfig
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.kube
+          ssh -p "${{ secrets.VPS_SSH_PORT }}" -i ~/.ssh/deploy-key \
+            -o StrictHostKeyChecking=accept-new \
+            "${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_HOST }}" \
+            "sudo /usr/bin/cat /etc/rancher/k3s/k3s.yaml" \
+            | sed 's/127.0.0.1:6443/127.0.0.1:16443/' \
+            > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Instalar kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Desplegar nueva imagen
+        run: |
+          kubectl set image deployment/web \
+            web=ghcr.io/${{ github.repository_owner }}/misiones-lfv:sha-${{ github.sha }} \
+            -n misiones-lfv
+          kubectl rollout status deployment/web -n misiones-lfv --timeout=120s
+
+      - name: Cerrar túnel SSH
+        if: always()
+        run: pkill -f "16443:localhost:6443" || true
